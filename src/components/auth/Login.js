@@ -11,7 +11,6 @@ import {
   Icon
 } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import { timingSafeEqual } from "crypto";
 
 class Login extends Component {
   state = {
