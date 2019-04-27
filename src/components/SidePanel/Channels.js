@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import firebase from "../../firebase";
+import { connect } from "react-redux";
 import { Menu, Icon, Modal, Form, Input, Button } from "semantic-ui-react";
 
 class Channels extends Component {
@@ -6,7 +8,46 @@ class Channels extends Component {
     channels: [],
     channelName: "",
     channelDetails: "",
+    channelsRef: firebase.database().ref("channels"),
     modal: false
+  };
+
+  handleSubmit = event => {
+    event.preventDefault();
+    if (this.isFormValid(this.state)) {
+      this.addChannel();
+    }
+  };
+
+  addChannel = () => {
+    const { channelsRef, channelName, channelDetails } = this.state;
+
+    const key = channelsRef.push().key;
+
+    const newChannel = {
+      id: key,
+      name: channelName,
+      details: channelDetails,
+      createBy: {
+        name: this.props.currentUser.displayName,
+        avatar: this.props.currentUser.photoURL
+      }
+    };
+
+    channelsRef
+      .child(key)
+      .update(newChannel)
+      .then(() => {
+        this.toggleModal();
+        console.log("channel added");
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  };
+
+  isFormValid = ({ channelName, channelDetails }) => {
+    return channelName && channelDetails;
   };
 
   handleChange = event => {
@@ -14,7 +55,11 @@ class Channels extends Component {
   };
 
   toggleModal = () => {
-    this.setState({ modal: !this.state.modal });
+    this.setState({
+      modal: !this.state.modal,
+      channelName: "",
+      channelDetails: ""
+    });
   };
 
   render() {
@@ -27,14 +72,19 @@ class Channels extends Component {
             <span>
               <Icon name="exchange" /> CHANNELS
             </span>{" "}
-            ({channels.length}) <Icon name="add" onClick={this.toggleModal} />
+            ({channels.length}){" "}
+            <Icon
+              name="add"
+              onClick={this.toggleModal}
+              style={{ cursor: "pointer" }}
+            />
           </Menu.Item>
         </Menu.Menu>
 
         <Modal basic open={modal} onClose={this.toggleModal}>
           <Modal.Header>Add a Channel</Modal.Header>
           <Modal.Content>
-            <Form>
+            <Form onSubmit={this.handleSubmit}>
               <Form.Field>
                 <Input
                   fluid
@@ -56,7 +106,7 @@ class Channels extends Component {
           </Modal.Content>
 
           <Modal.Actions>
-            <Button color="green" inverted>
+            <Button color="green" inverted onClick={this.handleSubmit}>
               <Icon name="checkmark" /> Add
             </Button>
 
@@ -70,4 +120,10 @@ class Channels extends Component {
   }
 }
 
-export default Channels;
+const mapStateToProps = state => {
+  return {
+    currentUser: state.user.currentUser
+  };
+};
+
+export default connect(mapStateToProps)(Channels);
