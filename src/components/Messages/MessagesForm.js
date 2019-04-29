@@ -47,6 +47,10 @@ class MessageForm extends Component {
     }
   };
 
+  uploadFile = (file, metadata) => {
+    console.log(file, metadata);
+  };
+
   createMessage = () => {
     const { uid, displayName, photoURL } = this.props.user;
     const message = {
@@ -97,7 +101,11 @@ class MessageForm extends Component {
             icon="cloud upload"
           />
 
-          <FileModal modal={modal} closeModal={this.toggleModal} />
+          <FileModal
+            modal={modal}
+            closeModal={this.toggleModal}
+            uploadFile={this.uploadFile}
+          />
         </Button.Group>
       </Segment>
     );
