@@ -3,12 +3,17 @@ import { Segment, Button, Input } from "semantic-ui-react";
 import { connect } from "react-redux";
 import firebase from "../../firebase";
 
+import FileModal from "./FileModal";
+
 class MessageForm extends Component {
   state = {
     message: "",
     loading: false,
-    errors: []
+    errors: [],
+    modal: false
   };
+
+  toggleModal = () => this.setState({ modal: !this.state.modal });
 
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
@@ -16,6 +21,7 @@ class MessageForm extends Component {
 
   sendMessage = () => {
     const { messagesRef, channel } = this.props;
+
     const { message } = this.state;
 
     if (message) {
@@ -43,13 +49,6 @@ class MessageForm extends Component {
 
   createMessage = () => {
     const { uid, displayName, photoURL } = this.props.user;
-    console.log("TCL: MessageForm -> createMessage -> photoURL", photoURL);
-    console.log(
-      "TCL: MessageForm -> createMessage -> displayName",
-      displayName
-    );
-    console.log("TCL: MessageForm -> createMessage -> uid", uid);
-
     const message = {
       timestamp: firebase.database.ServerValue.TIMESTAMP,
       user: {
@@ -64,7 +63,7 @@ class MessageForm extends Component {
   };
 
   render() {
-    const { errors } = this.state;
+    const { errors, message, loading, modal } = this.state;
 
     return (
       <Segment className="message__form">
@@ -72,6 +71,7 @@ class MessageForm extends Component {
           fluid
           name="message"
           onChange={this.handleChange}
+          value={message}
           style={{ marginBottom: "0.7em" }}
           label={<Button icon={"add"} />}
           labelPosition="left"
@@ -83,6 +83,7 @@ class MessageForm extends Component {
         <Button.Group icon widths="2">
           <Button
             onClick={this.sendMessage}
+            disabled={loading}
             color="orange"
             content="Add Reply"
             labelPosition="left"
@@ -90,10 +91,13 @@ class MessageForm extends Component {
           />
           <Button
             color="teal"
+            onClick={this.toggleModal}
             content="Upload Media"
             labelPosition="right"
             icon="cloud upload"
           />
+
+          <FileModal modal={modal} closeModal={this.toggleModal} />
         </Button.Group>
       </Segment>
     );

@@ -18,8 +18,6 @@ import { setUser, clearUser } from "./actions";
 const store = createStore(rootReducer, composeWithDevTools());
 
 class Root extends Component {
-  state = {};
-
   componentDidMount() {
     // onAuthStateChanged is a listener in app, detect if user has logged in
     firebase.auth().onAuthStateChanged(user => {
