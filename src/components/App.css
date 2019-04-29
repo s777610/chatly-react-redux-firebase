@@ -24,3 +24,11 @@ body,
   border-left: 2px solid orange;
   padding-left: 8px;
 }
+
+.message__image {
+  padding: iem;
+}
+
+.progress__bar {
+  margin: 0.3em 0 0 0 !important;
+}

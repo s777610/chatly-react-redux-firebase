@@ -62,7 +62,6 @@ class Messages extends Component {
 
         <Segment>
           <Comment.Group className="messages">
-            {this.props.channel && this.props.channel.name}
             {this.displayMessages(messages)}
           </Comment.Group>
         </Segment>
